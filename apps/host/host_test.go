@@ -11,7 +11,7 @@ import (
 
 func TestRunShell(t *testing.T) {
 	should := assert.New(t)
-	cli := host.NewClientConfig("127.0.0.1", 22, "root", "")
+	cli := host.NewClientConfig("", 22, "root", "")
 	err := cli.CreateClient(context.Background())
 	fmt.Println("haha")
 	if should.NoError(err) {
