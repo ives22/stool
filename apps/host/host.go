@@ -46,6 +46,26 @@ func (c *ClientConfig) RunShell(ctx context.Context, cmd string) (ret string, er
 
 	// 执行shell命令
 	output, err := session.CombinedOutput(cmd)
+
+	if err != nil {
+		log.Fatalf("无法执行命令: %v", err)
+	}
+
+	fmt.Println(string(output))
+	return string(output), nil
+}
+
+func (c *ClientConfig) RunShellOne(cmd string) (ret string, err error) {
+	// 准备一个会话，执行shell命令
+	session, err := c.Client.NewSession()
+	if err != nil {
+		return "", fmt.Errorf("failed create session, %v", err)
+	}
+	defer session.Close()
+
+	// 执行shell命令
+	output, err := session.CombinedOutput(cmd)
+
 	if err != nil {
 		log.Fatalf("无法执行命令: %v", err)
 	}

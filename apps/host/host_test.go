@@ -11,10 +11,26 @@ import (
 
 func TestRunShell(t *testing.T) {
 	should := assert.New(t)
-	cli := host.NewClientConfig("", 22, "root", "")
+	cli := host.NewClientConfig("", 22, "user1", "111")
 	err := cli.CreateClient(context.Background())
-	fmt.Println("haha")
 	if should.NoError(err) {
-		cli.RunShell(context.Background(), "ls /root")
+		cli.RunShell(context.Background(), " ls -l /")
 	}
+}
+
+func TestIsExistFile(t *testing.T) {
+	s := host.NewSSHSetup()
+	ok := s.IsExistFile("/Users/liyanjie/Documents/08 go/03 Project/stool")
+	fmt.Println(ok)
+}
+
+func TestPushKey(t *testing.T) {
+	//should := assert.New(t)
+	p := host.NewPushSSHKey()
+	p.Init("../../etc/ip.txt", "root", "ives", 22)
+	p.PushKey()
+	//hostList, err := p.Init("../../etc/ip.txt")
+	//if should.NoError(err) {
+	//	fmt.Println(hostList)
+	//}
 }

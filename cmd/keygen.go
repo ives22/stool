@@ -9,11 +9,12 @@ var userHome string
 
 var KeyGenCmd = &cobra.Command{
 	Use:   "keygen",
-	Short: "生成ssh密钥",
-	Long:  "生成ssh密钥",
+	Short: "Generating public/private rsa key pair for user",
+	Long:  "Generating public/private rsa key pair for user",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		server := host.NewSSHSetup()
 		server.Home = userHome
+		// 创建ssh密钥
 		server.KeyGen()
 
 		return nil
