@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/user"
 	"path"
@@ -14,27 +13,19 @@ import (
 
 // 推送密钥到远程服务器
 
-type PushSSHKey struct {
-	HostList []*ClientConfig
-}
-
-func NewPushSSHKey() *PushSSHKey {
-	return &PushSSHKey{}
-}
-
-func (p *PushSSHKey) PushKey() {
+func (c *ClientsConf) PushKey() {
 	var (
 		accHost []string
 		errHost []string
 	)
 
-	publicKeyStr, err := p.getPrivateKey()
+	publicKeyStr, err := c.getPublicKey()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	for _, ins := range p.HostList {
+	for _, ins := range c.HostList {
 		// 生成ssh客户端
 		err := ins.CreateClient(context.Background())
 		if err != nil {
@@ -69,15 +60,15 @@ func (p *PushSSHKey) PushKey() {
 	}
 
 	if len(accHost) > 0 {
-		log.Printf("success: {num: %d, hosts: %s}\n", len(accHost), accHost)
 		fmt.Printf("success: {num: %d, hosts: %s}\n", len(accHost), accHost)
-	} else if len(errHost) > 0 {
+	}
+	if len(errHost) > 0 {
 		fmt.Printf("failed: {num: %d, hosts: %s}\n", len(errHost), errHost)
 	}
 }
 
 // Init 读取IP文件，生成一个[]*ClientConfig 切片
-func (p *PushSSHKey) Init(ipFile string, user, pwd string, port int64) {
+func (c *ClientsConf) Init(ipFile string, user, pwd string, port int64) {
 	fileObj, err := os.Open(ipFile)
 	if err != nil {
 		fmt.Printf("open file failed, %s\n", err)
@@ -88,7 +79,6 @@ func (p *PushSSHKey) Init(ipFile string, user, pwd string, port int64) {
 	for {
 		line, err := reader.ReadString('\n')
 		ins := &ClientConfig{
-			Host:     "",
 			Port:     port,
 			UserName: user,
 			Password: pwd,
@@ -101,7 +91,7 @@ func (p *PushSSHKey) Init(ipFile string, user, pwd string, port int64) {
 					if len(sLine) > 0 {
 						ins.Host = sLine[0]
 					}
-					p.HostList = append(p.HostList, ins)
+					c.HostList = append(c.HostList, ins)
 				}
 			}
 			return
@@ -110,7 +100,7 @@ func (p *PushSSHKey) Init(ipFile string, user, pwd string, port int64) {
 		if len(sLine) > 0 {
 			ins.Host = sLine[0]
 		}
-		p.HostList = append(p.HostList, ins)
+		c.HostList = append(c.HostList, ins)
 	}
 }
 
@@ -119,15 +109,23 @@ func splitStr(str string) []string {
 	return strings.Fields(str)
 }
 
-// getPrivateKey 获取当前用户的公钥
-func (p *PushSSHKey) getPrivateKey() (string, error) {
+func (c *ClientsConf) GetUser() string {
+	currentUser, err := user.Current()
+	if err != nil {
+		return "root"
+	}
+	return currentUser.Username
+}
+
+// getPublicKey 获取当前用户的公钥
+func (c *ClientsConf) getPublicKey() (string, error) {
 	currentUser, err := user.Current()
 	if err != nil {
 		return "", fmt.Errorf("failed to get user home dir, %s", err)
 	}
 
 	publicKeyFile := path.Join(currentUser.HomeDir, ".ssh/id_rsa.pub")
-	ok := p.isExistFile(publicKeyFile)
+	ok := c.isExistFile(publicKeyFile)
 	if !ok {
 		return "", fmt.Errorf("user %s did not generate an SSH key", currentUser.Name)
 	}
@@ -140,11 +138,10 @@ func (p *PushSSHKey) getPrivateKey() (string, error) {
 
 	publicKey := strings.TrimRight(string(publicKeyContent), "\r\n")
 	return publicKey, nil
-	//return string(publicKeyContent), nil
 }
 
 // IsExistFile 判断文件或目录是否存在，存在返回true，不存在返回false
-func (p *PushSSHKey) isExistFile(filePath string) bool {
+func (c *ClientsConf) isExistFile(filePath string) bool {
 	_, err := os.Stat(filePath)
 	if os.IsNotExist(err) {
 		return false

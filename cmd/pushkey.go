@@ -25,7 +25,11 @@ var PushKeyCmd = &cobra.Command{
 		}
 
 		// NewPush
-		push := host.NewPushSSHKey()
+		push := host.NewClientsConf()
+
+		if user == "" {
+			user = push.GetUser()
+		}
 
 		// 初始化
 		push.Init(ipFile, user, pwd, port)
@@ -38,10 +42,10 @@ var PushKeyCmd = &cobra.Command{
 }
 
 func init() {
-	PushKeyCmd.PersistentFlags().StringVarP(&user, "username", "u", "root", "user name")
+	PushKeyCmd.PersistentFlags().StringVarP(&user, "username", "u", "", "user name default current user")
 	PushKeyCmd.PersistentFlags().StringVarP(&pwd, "password", "p", "", "user password (required)")
 	PushKeyCmd.PersistentFlags().Int64VarP(&port, "port", "P", 22, "ssh port")
-	PushKeyCmd.PersistentFlags().StringVarP(&ipFile, "file", "i", "etc/ip.txt", "ip list file")
+	PushKeyCmd.PersistentFlags().StringVarP(&ipFile, "file", "i", "ip.txt", "ip list file")
 
 	RootCmd.AddCommand(PushKeyCmd)
 }

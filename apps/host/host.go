@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
 	"log"
+	"time"
 )
 
 func NewClientConfig(host string, port int64, user, pass string) *ClientConfig {
@@ -24,6 +25,27 @@ func (c *ClientConfig) CreateClient(ctx context.Context) error {
 			ssh.Password(c.Password),
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         10 * time.Second,
+	}
+
+	addr := fmt.Sprintf("%s:%d", c.Host, c.Port)
+	client, err := ssh.Dial("tcp", addr, config)
+	if err != nil {
+		return fmt.Errorf("failed to dial, %v", err)
+	}
+
+	c.Client = client
+	return nil
+}
+
+func (c *ClientConfig) CreateClientForSecretKey(ctx context.Context) error {
+	config := &ssh.ClientConfig{
+		User: c.UserName,
+		Auth: []ssh.AuthMethod{
+			ssh.PublicKeys(c.PrivateKey),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         10 * time.Second,
 	}
 
 	addr := fmt.Sprintf("%s:%d", c.Host, c.Port)
