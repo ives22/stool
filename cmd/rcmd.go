@@ -21,7 +21,7 @@ var RunShellCmd = &cobra.Command{
 
 		// 检查 pwd 参数是否为空
 		if rCmd == "" {
-			return fmt.Errorf("password is required")
+			return fmt.Errorf("command is required")
 		}
 
 		// NewPush
