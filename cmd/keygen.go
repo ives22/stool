@@ -22,6 +22,6 @@ var KeyGenCmd = &cobra.Command{
 }
 
 func init() {
-	KeyGenCmd.PersistentFlags().StringVarP(&userHome, "home", "H", "~", "用户家目录，echo $HOME")
+	KeyGenCmd.PersistentFlags().StringVarP(&userHome, "home", "H", "~", "user home，echo $HOME")
 	RootCmd.AddCommand(KeyGenCmd)
 }
