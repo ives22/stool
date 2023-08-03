@@ -31,6 +31,10 @@ var RunShellCmd = &cobra.Command{
 			rUser = cli.GetUser()
 		}
 
+		if rIPFile == "" {
+			ipFile = "ip.txt"
+		}
+
 		// 初始化
 		cli.InitClientForKey(rIPFile, rUser, rPort)
 
@@ -44,7 +48,7 @@ var RunShellCmd = &cobra.Command{
 func init() {
 	RunShellCmd.PersistentFlags().StringVarP(&rUser, "username", "u", "", "user name, default current user")
 	RunShellCmd.PersistentFlags().Int64VarP(&rPort, "port", "P", 22, "ssh port")
-	RunShellCmd.PersistentFlags().StringVarP(&rIPFile, "file", "i", "ip.txt", "ip list file")
+	RunShellCmd.PersistentFlags().StringVarP(&rIPFile, "file", "f", "ip.txt", "ip list file")
 	RunShellCmd.PersistentFlags().StringVarP(&rCmd, "command", "c", "", "Command to execute (required)")
 
 	RootCmd.AddCommand(RunShellCmd)

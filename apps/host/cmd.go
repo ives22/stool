@@ -17,7 +17,6 @@ func (c *ClientsConf) Command(cmd string) {
 		err := ins.CreateClientForSecretKey(context.Background())
 		if err != nil {
 			fmt.Printf("host %s: %s\n", ins.Host, err)
-			fmt.Println("aaaaabbbbb")
 			continue
 		}
 		defer ins.Client.Close()
