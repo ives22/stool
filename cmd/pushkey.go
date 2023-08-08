@@ -45,7 +45,7 @@ func init() {
 	PushKeyCmd.PersistentFlags().StringVarP(&user, "username", "u", "", "user name default current user")
 	PushKeyCmd.PersistentFlags().StringVarP(&pwd, "password", "p", "", "user password (required)")
 	PushKeyCmd.PersistentFlags().Int64VarP(&port, "port", "P", 22, "ssh port")
-	PushKeyCmd.PersistentFlags().StringVarP(&ipFile, "file", "i", "ip.txt", "ip list file")
+	PushKeyCmd.PersistentFlags().StringVarP(&ipFile, "file", "f", "ip.txt", "ip list file")
 
 	RootCmd.AddCommand(PushKeyCmd)
 }
